@@ -21,7 +21,7 @@ export interface Task {
   updatedAt: string;
 }
 
-export type TaskViewMode = 'AGENDA' | 'ALL_TASKS' | 'TIMELINE' | 'OVERDUE';
+export type TaskViewMode = 'AGENDA' | 'ALL_TASKS' | 'TIMELINE' | 'OVERDUE' | 'FOCUS';
 
 export interface TaskContextType {
   tasks: Task[];

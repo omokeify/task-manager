@@ -13,6 +13,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView }) => {
   const inboxCount = tasks.filter(t => t.status === 'PENDING').length;
   
   const navItems = [
+    { id: 'FOCUS', label: 'Focus Mode', icon: 'center_focus_strong', count: null, special: true },
     { id: 'AGENDA', label: 'Today', icon: 'calendar_today', count: null },
     { id: 'ALL_TASKS', label: 'Inbox', icon: 'inbox', count: inboxCount },
     { id: 'TIMELINE', label: 'Productivity', icon: 'bar_chart', count: null },
@@ -20,7 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView }) => {
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-primary/10 dark:border-white/10 flex flex-col bg-white/30 dark:bg-black/20 backdrop-blur-md h-full hidden md:flex">
+    <aside className="w-64 flex-shrink-0 border-r border-primary/10 dark:border-white/10 flex flex-col bg-white/30 dark:bg-black/20 backdrop-blur-md h-full hidden md:flex z-20">
       <div className="p-8">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-lemon rounded-full flex items-center justify-center">
@@ -38,7 +39,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView }) => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
               currentView === item.id
                 ? 'bg-primary text-white font-medium shadow-lg shadow-primary/20'
-                : 'hover:bg-white/50 dark:hover:bg-white/10 text-ash dark:text-chalk/70'
+                : item.special 
+                  ? 'bg-lemon/50 text-primary hover:bg-lemon' 
+                  : 'hover:bg-white/50 dark:hover:bg-white/10 text-ash dark:text-chalk/70'
             }`}
           >
             <span className={`material-icons-round text-[20px] ${item.highlight && currentView !== item.id ? 'text-red-500' : ''}`}>

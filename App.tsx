@@ -5,6 +5,7 @@ import { RightSidebar } from './components/RightSidebar';
 import { QuickCaptureModal } from './components/QuickCaptureModal';
 import { DashboardView } from './components/DashboardView';
 import { TimelineView } from './components/TimelineView';
+import { FocusModeView } from './components/FocusModeView';
 import { TaskCard } from './components/TaskCard';
 import { TaskViewMode, TaskStatus, Priority } from './types';
 
@@ -17,6 +18,8 @@ const AppContent = () => {
     switch (currentView) {
       case 'AGENDA':
         return <DashboardView />;
+      case 'FOCUS':
+        return <FocusModeView />;
       case 'TIMELINE':
         return <TimelineView />;
       case 'ALL_TASKS':
@@ -60,6 +63,9 @@ const AppContent = () => {
     document.documentElement.classList.toggle('dark');
   };
 
+  // Focus View takes up full width (except nav sidebar), so we hide the right sidebar
+  const isFocusMode = currentView === 'FOCUS';
+
   return (
     <div className="flex h-screen overflow-hidden relative">
        {/* Ambient Background Effect */}
@@ -83,13 +89,13 @@ const AppContent = () => {
             </button>
         </header>
 
-        <div className="p-6 md:p-12 max-w-5xl mx-auto w-full flex-1">
+        <div className={`p-6 md:p-12 w-full flex-1 ${isFocusMode ? 'max-w-7xl mx-auto h-full' : 'max-w-5xl mx-auto'}`}>
             {renderContent()}
         </div>
       </main>
 
-      {/* Right Sidebar */}
-      <RightSidebar />
+      {/* Right Sidebar - Hidden in Focus Mode */}
+      {!isFocusMode && <RightSidebar />}
 
       {/* FAB */}
       <div className="fixed bottom-6 right-6 flex gap-4 z-50">
