@@ -3,6 +3,36 @@ import { useTasks } from '../context/TaskContext';
 import { TaskStatus, Priority } from '../types';
 import { isOverdue, isToday } from '../utils';
 
+// Simple synthesized chime using Web Audio API to avoid external assets
+const playNotificationSound = () => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    const playNote = (freq: number, startTime: number, duration: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.05, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    };
+
+    // Play a pleasant ascending major triad (C5 - E5 - G5)
+    const now = ctx.currentTime;
+    playNote(523.25, now, 0.3);       // C5
+    playNote(659.25, now + 0.1, 0.3); // E5
+    playNote(783.99, now + 0.2, 0.6); // G5
+  } catch (e) {
+    console.error("Audio playback failed", e);
+  }
+};
+
 export const FocusModeView: React.FC = () => {
   const { tasks, toggleTaskStatus } = useTasks();
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes
@@ -39,7 +69,8 @@ export const FocusModeView: React.FC = () => {
       interval = window.setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && isActive) {
+      playNotificationSound();
       setIsActive(false);
     }
     return () => clearInterval(interval);
@@ -53,6 +84,7 @@ export const FocusModeView: React.FC = () => {
 
   const handleComplete = () => {
       if (activeTask) {
+          playNotificationSound();
           toggleTaskStatus(activeTask.id);
           setTimeLeft(25 * 60); // Reset timer for next task
           setIsActive(false);
